@@ -5,4 +5,5 @@
   而直接 Google 這個 Exception，大多找不到什麼有用結果
   （解方：剛好翻到類似的 Gitgub 專案）
 - Cambridge 爬下來超大有 3000 多行，我本機直接當掉
-  （解方：好耶換 *Colab*）
+  （解方：先換 *Colab*，等過濾完再回來本機就好）
+- 沒有人跟我說 @staticmethod 這個東西：（
