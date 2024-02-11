@@ -1,7 +1,21 @@
 import requests as req
 from bs4 import BeautifulSoup as bsp
+import random
+import time # 測試用
 
 class Crawler:
+
+  """
+  WordTrans - 把片語單字中間的空格改成 - ，降低找不到的機率
+  INPUT - tar:string，目標單字
+  OUTPUT - string，轉換後的單字
+  """
+  @staticmethod
+  def WordTrans(tar):
+    word_list = tar.split(" ") # 分割字串
+    ret = "-".join(word_list) # 把字串接回去
+    return ret
+
 
   """
   ReturnStatus - 顯示訪問狀態
@@ -49,13 +63,14 @@ class Crawler:
   INPUT - tar:string，要爬的單字
   OUTPUT - ret:string-based-list，過濾後的所有句子，注意可能是 empty list
   """
-  @staticmethod
-  def GetSentence(tar): # 把例句丟進來
+  
+  def GetSentence(self, tar): # 把例句丟進來
 
+    tar = self.WordTrans(tar) # 先轉換字串
     target_url = "https://dictionary.cambridge.org/dictionary/english-chinese-traditional/" + tar
     headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
     res = req.get(target_url, headers = headers)
-    Crawler.ReturnStatus(res.status_code) # 顯示訪問狀態
+    # Crawler.ReturnStatus(res.status_code) # 顯示訪問狀態
 
     soup = bsp(res.text, "html.parser")
     ret = [] # 這邊等等會拿來放傳會來的例句
@@ -71,18 +86,82 @@ class Crawler:
   INPUT - tar:string，要爬的單字
   OUTPUT - None
   """
-  @staticmethod
-  def PrintAll(tar):
-    tmp_list = Crawler.GetSentence(tar)
+
+  def PrintAll(self, tar):
+    tar = self.WordTrans(tar)
+    tmp_list = Crawler.GetSentence(self, tar)
     if (len(tmp_list) == 0):
       print("No sentence found!")
     else:
       for i in range (0, len(tmp_list)):
         print(tmp_list[i])
-    
-"""
-===Test Area===
+  
 
-crab = Crawler()
-crab.PrintAll("Appeal")
-"""
+  """
+  GetType - 獲取特定單字的詞性
+  INPUT - tar:string，目標單字
+  OUTPUT - string-based-set，可能包含
+           [noun, verb, pronoun, conjunction, adjective, interjection, adverb, preposition, phrase, saying, informal, phrasal verb, idiom]
+  """
+  def GetType(self, tar):
+
+    tar = self.WordTrans(tar) 
+    target_url = "https://dictionary.cambridge.org/dictionary/english-chinese-traditional/" + tar
+    headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
+    res = req.get(target_url, headers = headers)
+    # Crawler.ReturnStatus(res.status_code) # 顯示訪問狀態
+
+    soup = bsp(res.text, "html.parser")
+    ret = {"unknown"} # 一個詞可能有很多種詞性，全部用 set 裝 (主要是 Cambridge 偶爾會出現重複詞性)
+    for node in soup.find_all("span", class_ = "pos dpos"): # pos dpos 裡面裝的是詞性
+      ret.add(node.get_text())
+
+    if (len(ret) > 1): # 只要找得到任何詞性，就把 unknown 刪掉
+      ret.remove("unknown")
+    return ret
+
+  """
+  GetChoice - 生成相似字詞，作為誘答選項
+  INPUT - word:string，正解單字
+  OUTPUT - string，和正解單字同字首的選項
+  """
+  @staticmethod
+  def GetChoice (word):
+    tmp_word = word.split() # 把正解單字分割，為了確認其長度
+    word_length = len(tmp_word)
+
+    target_url = "https://dictionary.cambridge.org/browse/english/" + word[0] # 直接搜出所有同字首清單
+    headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
+    """time_0 = time.time()"""
+    res = req.get(target_url, headers = headers)
+    soup = bsp(res.text, "html.parser")
+    """time_1 = time.time()"""
+
+    herfs = []
+    for tmp in soup.find_all("a", class_ = "hlh32 hdb dil tcbd"): # 清單會分類放在超連結
+      herfs.append(tmp.get("href")) # 抓出這些連結
+    random.shuffle(herfs) # 隨便排列它，確保隨機性
+    """time_2 = time.time()"""
+
+    for i in range(0, len(herfs)): # 挑一個連結出來
+      """print(f"TIME COST : {time_1 - time_0}, {time_2 - time_1}")"""
+      target_url_2 = herfs[i] # 爬過去
+      res_2 = req.get(target_url_2, headers = headers)
+      soup_2 = bsp(res_2.text, "html.parser")
+
+      for node in soup_2.find_all("span", class_ = "hw haf"): # 再從這個連結中抓出所有同字首的字
+        ret_list = node.get_text().split() # 確認抓出來字的長度
+        if (word_length == 1 and len(ret_list) == 1): # 如果正解單字長度是 1，那回傳單字長度也是 1
+          ret = node.get_text().replace("\n", "")
+          return node.get_text()
+        if (word_length > 1 and len(ret_list) > 1): # 否則至少要回傳單字長度 > 1 的，看起來才沒那麼瞎
+          if (ret_list[-1] == "idiom" or ret_list[-1] == "phrase"): # 不知為何，有時會抓到奇怪後綴，在此修正
+            ret_list[-1] = ""
+          return " ".join(ret_list) # 把修正後的重新 join 回字串，回傳
+
+### Test Area
+if __name__ == "__main__":
+  crab = Crawler()
+  # crab.PrintAll("go")
+  print(crab.GetChoice("go"))
+
