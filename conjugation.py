@@ -80,6 +80,11 @@ def GetConjugation(tar, word_type):
     ret = {tar}
     if (tar[-1] == "e"):
       ret.update([tar+"r", tar+"st"]) # 字尾是 e，特殊變化
+    elif (tar[-1] == "y"): 
+      temp = ""
+      for i in range(0, len(tar)-1):
+        temp += tar[i]
+      ret.update([ret+"ier", ret+"iest"]) # 字尾是 y，去 y 加 ier 或 iest
     else:
       ret.update([tar+"er", tar+"est"]) # 不重複字尾
       ret.update([tar+tar[-1]+"er", tar+tar[-1]+"est"]) # 重複字尾

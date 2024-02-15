@@ -26,7 +26,7 @@ class Crawler:
   def ReturnStatus(num):
 
     if (num <= 199):
-        print(f"Informational responses, status code = {num}\n")
+      print(f"Informational responses, status code = {num}\n")
     elif (num <= 299):
       print(f"Successful responses, status code = {num}\n")
     elif (num <= 399):
@@ -63,8 +63,7 @@ class Crawler:
   INPUT - tar:string，要爬的單字
   OUTPUT - ret:string-based-list，過濾後的所有句子，注意可能是 empty list
   """
-  
-  def GetSentence(self, tar): # 把例句丟進來
+  def GetSentence(self, tar):
 
     tar = self.WordTrans(tar) # 先轉換字串
     target_url = "https://dictionary.cambridge.org/dictionary/english-chinese-traditional/" + tar
@@ -159,9 +158,26 @@ class Crawler:
             ret_list[-1] = ""
           return " ".join(ret_list) # 把修正後的重新 join 回字串，回傳
 
+  """
+  WordSearch : 回傳給定單字的所有意思
+  INPUT : word:string，要查詢的單字
+  OUTPUT : string-based-list，要輸出的所有內容
+  """
+  @staticmethod
+  def WordSearch (word):
+    target_url = "https://dictionary.cambridge.org/dictionary/english-chinese-traditional/" + word
+    headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
+    res = req.get(target_url, headers = headers)
+    soup = bsp(res.text, "html.parser")
+
+    ret = []
+    for node in soup.find_all("span", class_ = "trans dtrans dtrans-se break-cj"):
+      ret.append(node.get_text())
+    return ret
+  
 ### Test Area
 if __name__ == "__main__":
   crab = Crawler()
   # crab.PrintAll("go")
-  print(crab.GetChoice("go"))
+  crab.WordSearch("duck")
 

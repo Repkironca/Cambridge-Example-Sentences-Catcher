@@ -1,0 +1,47 @@
+=== Command List ===
+* Whenever you're trying to enter a command
+  Always remember that all the commands starts with $
+* Note that all of the choices in problem will never
+  experience any tense conjugation or decoration due to technological barriers
+
+$help : literal meaning, print the command list, what you're reading now
+
+$e : Exit, End the project
+
+$cl : Check List, completely print your word list with indexes
+
+$sg : Simple get, the system will ask you to enter a single word, then append it to your word list
+
+$mg : Multiplel get, you can add multiple words to your word list by terminal directly
+      The system will ask you to enter a "separation signal", and each word should be separated by it
+      Note that enter key will always be seen as a separation signal
+      e.g. If your separation signal is "@", when you enter "A@B@C", "A" "B" "C" will be respectively append to your list
+      P.S. You can set your separation signal as "enter" by typing "\n", or set it as "tab" by typing "\t"
+
+$fg : Get From File, the system will ask you to enter a file name.
+      The file you designate should exist in the same folder with "userinput.py"
+      (To put it in simple words, just move your file to where you save this project)
+
+$dn : Delete By Name, the system will ask you to enter the words you want to delete
+      Each word should be separated by an enter, and when you finish, just enter "$end" to continue
+
+$di : Delete By Index, the system will ask you to enter some numbers separated by a space
+      represent the indexes of words you want to remove from word list
+
+$move : literal meaning, enter two numbers A and B
+        then the word with index A will be move to index B
+        The words behind it will be automatically pushed back by one space
+
+$ss : Search for (example) Sentences, enter a word or phrase, and press enter when finishing typing
+
+$sm : Search for Meanings, enter a word or phrase, and press enter when finishing typing
+
+$setf : Set "From Word List", "From Word List" is a variable shows how many words will appear in the choices
+        (Such words are not correct answer)
+        "From Word List" can be either 0, 1, 2, or 3. Bigger it is, slower the project may be
+
+$exam : The core function of this project, the system will selete some random words in your word list,
+        then automatically generate problems based on the selected word
+
+$nat : print a cat, useless but lovely :)
+=== === === === ====

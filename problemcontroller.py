@@ -18,8 +18,9 @@ class ProblemSetter():
 	INPUT - word:string，準備要用來出題的單字
 	OUTPUT - None
 	"""
-	def __init__(self, word):
+	def __init__(self, word, from_word_list):
 		self.answer = word
+		self.from_word_list = from_word_list
 		try: # 嘗試尋找 word_list.txt
 			with open("word_list.txt", "r", encoding = "utf-8") as word_list: # 從 word_list.txt 讀入字庫
 				row_word = word_list.read()
@@ -69,17 +70,6 @@ class ProblemSetter():
 		word = "".join(char_list) # 最後 merge 回去 return
 		return word
 
-	"""
-	SetFromWordList - 設定有多少選項要出自字庫
-	INPUT - value:int，介於 0至3 ，有幾個誘答選項要出自字庫
-	OUTPUT - None
-	"""
-	def SetFromWordList (self, value):
-		if (value >= 0 and value <= 3): # 確認進來的值是合理的
-			self.from_word_list = value
-			print(f"the number of words which will be generated from your word list has been successfully set to {value}")
-		else:
-			print("Error, the value should be between 0 and 3")
 
 
 	"""
@@ -89,7 +79,7 @@ class ProblemSetter():
 			 int，執行成功的話回傳句子編號，失敗回傳 -1
 	         bool，執行成功或失敗，失敗代表沒有可用句子了。成功的話會順便回傳句子編號
 	"""
-	def ProblemGiver(self, answer_index):
+	def ProblemGiver(self):
 		"""time_0 = time.time()"""
 		if (len(self.sentences) - len(self.trash) > 0): # 扣掉被使用者 ban 掉的句子後還有可用的
 			output_index = self.RandIntExclude(0, len(self.sentences)-1, self.trash) # 從例句庫中選一個
@@ -106,7 +96,7 @@ class ProblemSetter():
 			"""time_1 = time.time()"""
 
 			choice_array = [self.answer, "", "", ""] # 四個選項組成的 list
-			trans = {0:"A", 1:"B", 2:"C", 3:"D"} # 字典：把 index 換成選項
+			trans = {0:"A", 1:"B", 2:"C", 3:"D"} # dictionarry：把 index 換成選項
 			
 			now_index = 1 # 目前正在處理，choice_array 的 index ( 0 預設是正解，最後會 shuffle() )
 			exclude_list = {self.answer} # 避免微乎其微的機率，有兩個選項一模一樣
@@ -180,6 +170,6 @@ class ProblemSetter():
 
 ### Test Area
 if __name__ == "__main__":
-	problem_setter = ProblemSetter("duck")
-	(choice_array, index, check) = problem_setter.ProblemGiver(0)
-	print(problem_setter.AnswerChecker(choice_array, 0))
+	problem_setter = ProblemSetter("duck", 1)
+	(choice_array, index, check) = problem_setter.ProblemGiver()
+	print(problem_setter.AnswerChecker(choice_array, index))

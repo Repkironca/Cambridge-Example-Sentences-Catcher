@@ -27,7 +27,6 @@ class UserInput:
 			with open ("word_list.txt", "r+", encoding = "utf-8") as word_list: # 嘗試打開 "word_list" 來讀取上次單字
 				row_word = word_list.read()
 				word = row_word.split("\n") # 間格符號預設是換行，基本上使用者不該動這份檔案
-				print(f"Start, size = {len(word)}, and it is \"{word[0]}\"")
 				for tmp in word:
 					if (tmp != ""):
 						self.vocabularies.append(tmp)
@@ -53,10 +52,12 @@ class UserInput:
 	OUTPUT - None
 	"""
 	def SimpleGet (self):
-		word = input()
+		word = input("Enter your word. When you finish, just press the enter key\n")
 		if (not (word in self.vocabularies)): # 單字庫中沒有這個字
 			self.vocabularies.append(word) # 在發現 "\n" 前，會不斷一直吃，接受片語
 			print(f"\"{word}\" has been successfully added to your word list")
+		else:
+			print(f"Failed. {word} is already in your work list")
 		self.AutoModify()
 
 
@@ -71,9 +72,9 @@ class UserInput:
 		success = [] # 有推進去的
 
 		while (True):
-			word = input()
+			word = input(f"Enter your word and separate them by \"{mid}\"\nAfter you finish entering, type \"$end\" to continue")
 
-			if (word == "$end$"): # 只有看到 " $end$ " 時，才會停止繼續吃單字
+			if (word == "$end"): # 只有看到 " $end " 時，才會停止繼續吃單字
 				break
 			word_list = word.split(mid) # 分割單字
 			for tmp in word_list:
@@ -83,10 +84,11 @@ class UserInput:
 				else: # 字庫中已經有這個字了
 					fail.append(tmp)
 
-		print("\"", end = " ") # （到下一個空行前）輸出成功推進去的字
-		for i in range(0, len(success)):
-			print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ")
-		print("\" have been successfully added to your word list")
+		if (len(success) > 0):
+			print("\"", end = " ") # （到下一個空行前）輸出成功推進去的字
+			for i in range(0, len(success)):
+				print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ")
+			print("\" have been successfully added to your word list")
 
 		if (len(fail) != 0): # （如果存在）輸出沒推進去的字
 			print("While \"", end = " ")
@@ -116,10 +118,11 @@ class UserInput:
 					else: # 字庫中已經有這個字了
 						fail.append(tmp)
 
-				print("\"", end = " ") # (到下一個空行前) 輸出成功推進去的字
-				for i in range(0, len(success)):
-					print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ")
-				print("\" have been successfully added to your word list")
+				if (len(success) > 0):
+					print("\"", end = " ") # (到下一個空行前) 輸出成功推進去的字
+					for i in range(0, len(success)):
+						print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ")
+					print("\" have been successfully added to your word list")
 
 				if (len(fail) != 0): # (如果存在)輸出沒推進去的字
 					print("While \"", end = " ")
@@ -149,16 +152,17 @@ class UserInput:
 			else: # 單字庫中根本沒有這個字
 				fail.append(tmp)
 
-		print("\"", end = " ") # （到下一個空行前）輸出成功刪除的單字
-		for i in range(0, len(success)):
-			print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ") 
-		print(f" \" {" has" if (len(success) == 1) else " have"} been successfully removed from your word list")
+		if (len(success) > 0):
+			print("\"", end = " ") # （到下一個空行前）輸出成功刪除的單字
+			for i in range(0, len(success)):
+				print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ") 
+			print(f" \" {" has" if (len(success) == 1) else " have"} been successfully removed from your word list")
 
 		if (len(fail) > 0): # 輸出沒有成功刪除的單字
 			print("While \"", end = " ")
-		for i in range(0, len(fail)):
-			print(f"{fail[i]}", end = "、" if (i != len(fail)-1) else " ")
-		print(f" \" {"isn't" if (len(success) == 1) else "are't"} in your word list")
+			for i in range(0, len(fail)):
+				print(f"{fail[i]}", end = "、" if (i != len(fail)-1) else " ")
+			print(f" \" {"isn't" if (len(success) == 1) else "are't"} in your word list")
 
 		self.AutoModify()
 
@@ -169,7 +173,9 @@ class UserInput:
 	Output - None
 	"""
 	def DeleteByIndex (self):
-		target_string = input() # 獲取輸入
+		print("Enter the index of words you want to delete (You can check the index of it by the command \"$cl\")")
+		print("Separate the indexes by a single space. After you finish, press enter to continue")
+		target_string = input("") # 獲取輸入
 		target_list = target_string.split(" ")
 		index_list = [] # 拿來存放轉換過的 index
 		success = [] # 成功刪除的單字
@@ -192,16 +198,17 @@ class UserInput:
 
 		removed = 0 # 因為刪除東西後會改變後面所有元素的 index，要用這個來校正
 		for index in index_list:
-			if (index >= 0 and index < len(self.vocabularies)):
+			if (index-removed >= 0 and index-removed < len(self.vocabularies)):
 				index -= removed
 				removed += 1
 				success.append(self.vocabularies[index])
 				del(self.vocabularies[index])
 
-		print("\"", end = " ") # 輸出成功刪除的單字
-		for i in range(0, len(success)):
-			print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ")
-		print(f"\" {"has" if (len(success) == 1) else "have"} been successfully removed from your word list")
+		if (len(success) > 0):
+			print("\"", end = " ") # 輸出成功刪除的單字
+			for i in range(0, len(success)):
+				print(f"{success[i]}", end = "、" if (i != len(success)-1) else " ")
+			print(f"\" {"has" if (len(success) == 1) else "have"} been successfully removed from your word list")
 
 		if (len(fail) > 0): # 輸出刪除失敗的索引
 			print("index = \"", end = " ")
