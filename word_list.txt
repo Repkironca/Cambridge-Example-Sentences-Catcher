@@ -1,8 +1,0 @@
-duck
-chocolate
-abort
-insert
-operator
-shotgun
-tartaglia_duck
-crocodile

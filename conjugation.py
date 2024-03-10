@@ -8,7 +8,7 @@ OUTPUT - set，裡面裝所有可能變化型，包含原始單字
 """
 def GetConjugation(tar, word_type): 
 
-  if (word_type == "noun"): # 名詞，偵測 -s、-es、-ies、-ves 字尾、部分不規則變化
+  if (word_type == "noun"): # 名詞，偵測 -s、-es、-ies、-ves 字尾、部分不規則變化 
     target_url = "https://zh.wiktionary.org/zh-hant/Appendix:%E8%8B%B1%E8%AF%AD%E4%B8%8D%E8%A7%84%E5%88%99%E5%A4%8D%E6%95%B0"
     headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
     res = req.get(target_url, headers = headers) # 往維基辭典的英語名詞不規則變化爬

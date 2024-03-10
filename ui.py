@@ -7,7 +7,7 @@ user_input = ""
 crawler = cr.Crawler()
 input_center = usip.UserInput()
 from_word_list = 1
-version = "1.0.0" # Sementic Versioning
+version = "1.0.1" # Sementic Versioning
 author = "Repkironca"
 
 """
