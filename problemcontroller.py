@@ -28,7 +28,6 @@ class ProblemSetter():
 				for tmp in process:
 					if (tmp != ""):
 						self.vocabularies.append(tmp)
-				print(f"DEBUG, OUT")
 		except FileNotFoundError: # 找不到檔案
 			print("Warring: Couldn't find \"word_list.txt\" in the same folder with \"userinput.py\"")
 			print("To fix the problem, please create a file named \"word_list.txt\" and NEVER edit its name or location")
