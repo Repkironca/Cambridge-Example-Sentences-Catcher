@@ -24,6 +24,9 @@ class ProblemSet():
 			print("To fix the problem, please create a file named \"word_list.txt\" and NEVER edit its name or location")
 
 	def initiate(self):
+		if (len(self.vocabularies) == 0):
+			print("Obiviously, you should have at least 1 word to start an exam\n")
+			return -1
 		while (True):
 			tmp = input(f"Type the total number of problems you want\n(the number should be no more than your word list size : {len(self.vocabularies)})\n")
 			if (tmp.isnumeric()):
@@ -40,7 +43,7 @@ class ProblemSet():
 		force_break = False
 		while (success_index < self.total_problem):
 			print(f"problem {success_index+1} of {self.total_problem}")
-			problem_setter = pc.ProblemSetter("_start_", -1) # 初始值，一定會改變
+			problem_setter = pc.ProblemSetter.__new__(pc.ProblemSetter) 
 			(choice_array, sentence_index, success) = ([], 0, False) # 初始值，一定會改變
 			while(not success):
 				if (now_index >= len(self.vocabularies)):
